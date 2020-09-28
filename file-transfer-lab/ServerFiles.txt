@@ -1,0 +1,2 @@
+Contents of 'b'testFile.txt''
+This is the test file. See you on the other side!
