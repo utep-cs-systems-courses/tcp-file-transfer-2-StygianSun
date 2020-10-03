@@ -10,11 +10,11 @@ the server. The names and contents of the transferred files are copied to
 ServerFiles.txt for verificiation.
 
 Notes:
-testFile.txt and testFile2.txt both have contents.
-testFile.txt is the first one to be transferred.
-testFile2.txt is the third file to be transferred, to test that the system
+1. testFile.txt and testFile2.txt both have contents.
+2. testFile.txt is the first one to be transferred.
+3. testFile2.txt is the third file to be transferred, to test that the system
 works after a failed transfer.
-ghostFile.txt is a file that doesn't exist in the directory. System should
+4. ghostFile.txt is a file that doesn't exist in the directory. System should
 return a "file not found" error.
-testFile3.txt exists in the directory, but has no contents. System should
+5. testFile3.txt exists in the directory, but has no contents. System should
 return a "file empty" error.
