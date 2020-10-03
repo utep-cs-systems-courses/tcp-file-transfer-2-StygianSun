@@ -42,13 +42,16 @@ if s is None:
 
 s.connect(addrPort)
 sentFiles = []
-files = ["testFile.txt","ghostFile.txt"]
+files = ["testFile.txt","ghostFile.txt","testFile2.txt","testFile3.txt"]
 
 def is_empty_file(filename):
     return (os.path.isfile(filename) and (os.path.getsize(filename) > 0))
 
 for file in files:
-    if not is_empty_file(file):
+    if not path.isfile(file):
+        print("'%s' did not send becuase it doesn't exist." % file)
+        pass
+    elif not is_empty_file(file):
         print("'%s' did not send because it is empty." % file)
         pass
     else:
@@ -58,14 +61,17 @@ for file in files:
         else:
             print("Sending %s to Server..." % file)
             framedSend(s, str.encode(file),debug)
-            sentFiles.append(file)
+            #sentFiles.append(file)
             try:
+                msg = "$exit"
                 with open(file, "r") as f:
                     for line in f:
                         framedSend(s,str.encode(line),debug)
                         print("Server Received: ", framedReceive(s,debug))
                     print("Server Coppied: '%s'\n" % file)
+                framedSend(s,str.encode(msg),debug)
                 f.close()
             except IOError:
                 print("'%s' could not be found and wasn't opened." % file)
+f.close()
 s.close()

@@ -3,6 +3,7 @@
 import sys
 sys.path.append("../lib")
 import re,socket,params
+from os import path
 
 switchesVarDefaults = (
     (('-l', '--listenPort'), 'listenPort', 50001),
@@ -38,19 +39,20 @@ while True:
     if fileName in filesReceived:
         print("%s has already been received." % fileName)
         break
-    elif fileName is None:
-        break
-    else:
+    elif fileName is not None:
         filesReceived.append(fileName)
-
         file.write("Contents of '%s'\n" % fileName)
         payload = framedReceive(conn, debug)
         if debug: print("Receiving:", payload)
         if not payload:
             print("Done transferring files. Disconnecting client.")
             break
-        file.write(payload.decode("utf-8"))
-        framedSend(conn,payload,debug)
+        while payload.decode("utf-8") != "$exit":
+            file.write(payload.decode("utf-8"))
+            framedSend(conn,payload,debug)
+            payload = framedReceive(conn,debug)
+    else:
+        break
 
 print("Server wrote the following to ServerFiles.txt")
 for x in filesReceived:

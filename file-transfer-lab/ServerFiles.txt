@@ -1,2 +1,4 @@
 Contents of 'b'testFile.txt''
 This is the test file. See you on the other side!
+Contents of 'b'testFile2.txt''
+Oh, uh... didn't expect you here. These are my contents I guess.
