@@ -59,4 +59,5 @@ for i in range(1):
             else:
                 esock.send(payload,debug)
                 print("Server reports: ", esock.receive(debug).decode())
-    print("'%s' does not exist." % toSend)
+    else:
+        print("'%s' does not exist." % toSend)

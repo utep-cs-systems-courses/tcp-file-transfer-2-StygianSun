@@ -24,7 +24,7 @@ class EncapSock:
                         msgLength = int(lengthStr)
                     except:
                         if len(self.rbuf):
-                            print("badly formed message length:", lengthStr)
+                            print("Badly formed message length:", lengthStr)
                             return None
                     state = "getPayload"
             if(state == "getPayload"):

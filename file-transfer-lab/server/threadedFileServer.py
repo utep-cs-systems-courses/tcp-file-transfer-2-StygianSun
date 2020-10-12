@@ -48,8 +48,9 @@ class Server(Thread):
                     self.esock.send(b"False",debug)
                     payload = self.esock.receive(debug)
                     outfile = open(newFile,"wb")
-                    outfile.write(filename)
+                    outfile.write(filename + b"\n")
                     outfile.write(payload)
+                    outfile.close()
                     self.esock.send(b"Wrote new file",debug)
 
 while True:
