@@ -19,7 +19,7 @@ dbug, listenPort = paramMap['debug'], paramMap['listenPort']
 if paramMap['usage']:
     params.usage()
 
-listsock = socket.socket(sock.AF_INET. socket.SOCK_STREAM)
+listsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 bindAddr = ("127.0.0.1", listenPort)
 listsock.bind(bindAddr)
 listsock.listen(3)
@@ -50,6 +50,6 @@ class Server(Thread):
                 self.esock.send(b"Wrote new file",debug)
 
 while True:
-    scokAddr = lsock.accept()
+    scokAddr = listsock.accept()
     server = Server(sockAddr)
     server.start()

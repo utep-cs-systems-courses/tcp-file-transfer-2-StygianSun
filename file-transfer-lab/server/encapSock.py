@@ -1,6 +1,6 @@
 import re
 
-class EncapFramedSock:
+class EncapSock:
     def __init__(self, sockAddr):
         self.sock, self.addr = sockAddr
         self.rbuf = b""
@@ -30,7 +30,7 @@ class EncapFramedSock:
             if(state == "getPayload"):
                 if len(self.rbuf) >= msgLength:
                     payload = self.rbuf[0:msgLength]
-                    self.rbuf = self.rbuf(msgLength:]
+                    self.rbuf = self.rbuf[msgLength:]
                     return payload
             r = self.sock.recv(100)
             self.rbuf += r
