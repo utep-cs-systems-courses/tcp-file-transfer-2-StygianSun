@@ -3,7 +3,7 @@
 import socket, sys, re
 from os import path
 from os.path import exists
-sys.path.appen("../../lib")
+sys.path.append("../../lib")
 import params
 
 from encapSock import EncapSock
@@ -41,32 +41,22 @@ if s is None:
 
 s.connect(addrPort)
 
-esock = EncapSock((sock, addrPort))
-run = True
-while run:
-    toSend = input("What file would you like to send? Enter $exit to exit the file client.")
-    if toSend == "$exit":
-        print("Exiting")
-        run = False
-        sys.exit(1)
+esock = EncapSock((s, addrPort))
+for i in range(1):
+    toSend = input("What file would you like to send?")
     if exists(toSend):
         file = open(toSend, 'rb')
         payload = file.read()
         if len(payload) == 0:
             print("'%s' did not send because it is empty." % toSend)
-            pass
+            sys.exit(0)
         else:
-            esock.send(fileName.encode(), debug)
+            esock.send(toSend.encode(), debug)
             fileCheck = esock.receive(debug).decode()
             if fileCheck == "True":
                 print("'%s' did not send because it is already in the server." % toSend)
-                pass
+                sys.exit(0)
             else:
-                try:
-                    esock.send(payload,debug)
-                    print("Server reports: ", esock.receive(debug).decode())
-                except:
-                    print("Connection to the server was lost...")
-                    sys.exit(0)
-    else:
-        print("'%s' does not exist." % fileName)
+                esock.send(payload,debug)
+                print("Server reports: ", esock.receive(debug).decode())
+    print("'%s' does not exist." % toSend)

@@ -6,13 +6,13 @@ class EncapSock:
         self.rbuf = b""
     def close(self):
         return self.sock.close()
-    def send(sock, payload, debug=0):
+    def send(self, payload, debug=0):
         if debug: print("encapSend: sending %d byte mesage" % len(payload))
         msg = str(len(payload)).encode() + b":" + payload
         while len(msg):
-            nsent = sock.send(msg)
+            nsent = self.sock.send(msg)
             msg = msg[nsent:]
-    def receive(sock, debug=0):
+    def receive(self, debug=0):
         state = "getLength"
         msgLength = -1
         while True:

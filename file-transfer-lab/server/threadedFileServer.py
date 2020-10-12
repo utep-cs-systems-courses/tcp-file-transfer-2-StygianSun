@@ -14,7 +14,7 @@ switchesVarDefaults = (
 progname = "threadServer"
 paramMap = params.parseParams(switchesVarDefaults)
 
-dbug, listenPort = paramMap['debug'], paramMap['listenPort']
+debug, listenPort = paramMap['debug'], paramMap['listenPort']
 
 if paramMap['usage']:
     params.usage()
@@ -38,18 +38,21 @@ class Server(Thread):
         print("New thread handling connection from: ", self.addr)
         while True:
             filename = self.esock.receive(debug)
-            print("Checking server for: ", filename.decode())
-            newFile = "new" + filename.decode()
-            print(newFile)
-            if exists(newFile):
-                self.esock.send(b"True", debug)
-                payload = self.esock.receive(debug)
-                outfile = open(newFile,"wb")
-                outfile.write(filename)
-                outfile.write(payload)
-                self.esock.send(b"Wrote new file",debug)
+            if filename is not None:
+                print("Checking server for: ", filename.decode())
+                newFile = "new" + filename.decode()
+                print(newFile)
+                if exists(newFile):
+                    self.esock.send(b"True", debug)
+                else:
+                    self.esock.send(b"False",debug)
+                    payload = self.esock.receive(debug)
+                    outfile = open(newFile,"wb")
+                    outfile.write(filename)
+                    outfile.write(payload)
+                    self.esock.send(b"Wrote new file",debug)
 
 while True:
-    scokAddr = listsock.accept()
+    sockAddr = listsock.accept()
     server = Server(sockAddr)
     server.start()
