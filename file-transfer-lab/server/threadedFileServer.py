@@ -4,6 +4,10 @@ import sys
 sys.path.append("../../lib")
 import re, socket, params, os
 from os.path import exists
+from threading import Thread, enumerate, Lock
+from encapSock import EncapSock
+global fileLock
+fileLock = Lock()
 
 switchesVarDefaults = (
     (('-l', '--listenPort'), 'listenPort', 50001),
@@ -25,9 +29,15 @@ listsock.bind(bindAddr)
 listsock.listen(3)
 print("Listening on: ", bindAddr)
 print("Waiting for a connection...")
+openFiles = []
 
-from threading import Thread
-from encapSock import EncapSock
+def startTransfer(fileName):
+    if fileName in openFiles:
+        esock.send(b"Exists", debug)
+    else:
+        openFiles.append(fileName)
+def endTransfer(fileName):
+    openFiles.remove(fileName)
 
 class Server(Thread):
     def __init__(self, sockAddr):
@@ -36,22 +46,31 @@ class Server(Thread):
         self.esock = EncapSock(sockAddr)
     def run(self):
         print("New thread handling connection from: ", self.addr)
-        while True:
-            filename = self.esock.receive(debug)
-            if filename is not None:
-                print("Checking server for: ", filename.decode())
-                newFile = "new" + filename.decode()
-                print(newFile)
-                if exists(newFile):
-                    self.esock.send(b"True", debug)
-                else:
-                    self.esock.send(b"False",debug)
-                    payload = self.esock.receive(debug)
-                    outfile = open(newFile,"wb")
-                    outfile.write(filename + b"\n")
-                    outfile.write(payload)
-                    outfile.close()
-                    self.esock.send(b"Wrote new file",debug)
+        filename = self.esock.receive(debug)
+
+        fileLock.acquire()
+        startTransfer(filename)
+        fileLock.release()
+        if filename is not None:
+            print("Checking server for: ", filename.decode())
+            newFile = "new" + filename.decode()
+            if exists(newFile):
+                self.esock.send(b"True", debug)
+            else:
+                self.esock.send(b"False",debug)
+                payload = self.esock.receive(debug)
+                if debug: print("Received: ", payload)
+
+                if not payload:
+                    if debug: print(f"Thread connected to {self.addr} is done")
+                    self.esock.close()
+                    return
+                outfile = open(newFile,"wb")
+                outfile.write(filename + b"\n")
+                outfile.write(payload)
+                endTransfer(filename)
+                self.esock.send(b"Wrote new file",debug)
+                print("Transfer complete from ", self.addr)
 
 while True:
     sockAddr = listsock.accept()
